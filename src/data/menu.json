@@ -1,0 +1,340 @@
+{
+  "categories": [
+    {
+      "id": "1",
+      "name": "Kahveler",
+      "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "101",
+          "name": "Türk Kahvesi",
+          "description": "Geleneksel Türk Kahvesi",
+          "price": "30 TL",
+          "image": "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "102",
+          "name": "Filtre Kahve",
+          "description": "Özel harmanlanmış çekirdeklerden filtre kahve",
+          "price": "35 TL",
+          "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "103",
+          "name": "Latte",
+          "description": "Espresso ve buharla ısıtılmış süt",
+          "price": "40 TL",
+          "image": "https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "104",
+          "name": "Mocha",
+          "description": "Espresso, çikolata ve süt karışımı",
+          "price": "45 TL",
+          "image": "https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "105",
+          "name": "Americano",
+          "description": "Espresso ve sıcak su",
+          "price": "35 TL",
+          "image": "https://images.unsplash.com/photo-1551030173-122aabc4489c?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Çaylar",
+      "image": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "201",
+          "name": "Siyah Çay",
+          "description": "Demlik çay",
+          "price": "15 TL",
+          "image": "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "202",
+          "name": "Yeşil Çay",
+          "description": "Antioksidan bakımından zengin yeşil çay",
+          "price": "25 TL",
+          "image": "https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "203",
+          "name": "Bitki Çayı",
+          "description": "Karışık bitki çayı",
+          "price": "30 TL",
+          "image": "https://images.unsplash.com/photo-1597481499750-3e6b22637e12?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "204",
+          "name": "Papatya Çayı",
+          "description": "Rahatlatıcı papatya çayı",
+          "price": "28 TL",
+          "image": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "205",
+          "name": "Ihlamur",
+          "description": "Taze ıhlamur çayı",
+          "price": "28 TL",
+          "image": "https://images.unsplash.com/photo-1563911892437-1feda0179e1b?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Tatlılar",
+      "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "301",
+          "name": "Cheesecake",
+          "description": "Ev yapımı cheesecake",
+          "price": "45 TL",
+          "image": "https://images.unsplash.com/photo-1524351199678-941a58a3df50?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "302",
+          "name": "Sufle",
+          "description": "Sıcak çikolatalı sufle",
+          "price": "50 TL",
+          "image": "https://images.unsplash.com/photo-1579306194872-64d3b7bac4c2?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "303",
+          "name": "Tiramisu",
+          "description": "İtalyan usulü tiramisu",
+          "price": "55 TL",
+          "image": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "304",
+          "name": "Profiterol",
+          "description": "Çikolata soslu profiterol",
+          "price": "48 TL",
+          "image": "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "305",
+          "name": "Magnolia",
+          "description": "Kremalı magnolia tatlısı",
+          "price": "45 TL",
+          "image": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Soğuk İçecekler",
+      "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "401",
+          "name": "Limonata",
+          "description": "Ev yapımı limonata",
+          "price": "30 TL",
+          "image": "https://images.unsplash.com/photo-1621263764928-df1444c5e859?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "402",
+          "name": "Soğuk Kahve",
+          "description": "Buzlu soğuk kahve",
+          "price": "40 TL",
+          "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "403",
+          "name": "Meyve Suyu",
+          "description": "Taze sıkılmış portakal suyu",
+          "price": "35 TL",
+          "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "404",
+          "name": "Smoothie",
+          "description": "Karışık meyveli smoothie",
+          "price": "45 TL",
+          "image": "https://images.unsplash.com/photo-1553530666-ba11a90bb0ae?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "405",
+          "name": "Buzlu Çay",
+          "description": "Şeftali aromalı buzlu çay",
+          "price": "32 TL",
+          "image": "https://images.unsplash.com/photo-1556679343-c1c1c5914f61?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Kahvaltı",
+      "image": "https://images.unsplash.com/photo-1533920379810-6bedac9e6a05?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "501",
+          "name": "Serpme Kahvaltı",
+          "description": "2 kişilik zengin serpme kahvaltı tabağı",
+          "price": "250 TL",
+          "image": "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "502",
+          "name": "Omlet",
+          "description": "Peynirli veya sebzeli omlet",
+          "price": "60 TL",
+          "image": "https://images.unsplash.com/photo-1510693206972-df098062cb71?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "503",
+          "name": "Menemen",
+          "description": "Geleneksel Türk usulü menemen",
+          "price": "65 TL",
+          "image": "https://images.unsplash.com/photo-1635363638580-c2809d049eee?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "504",
+          "name": "Avokado Toast",
+          "description": "Avokado, yumurta ve ekşi maya ekmek",
+          "price": "75 TL",
+          "image": "https://images.unsplash.com/photo-1603046891744-1f76eb10aec1?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "505",
+          "name": "Pancake",
+          "description": "Akçaağaç şurubu ve meyveli pancake",
+          "price": "70 TL",
+          "image": "https://images.unsplash.com/photo-1554520735-0a6b8b6ce8b7?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Ana Yemekler",
+      "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "601",
+          "name": "Izgara Tavuk",
+          "description": "Sebzeli pilav ve ızgara tavuk",
+          "price": "90 TL",
+          "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "602",
+          "name": "Köfte",
+          "description": "Özel baharatlı köfte, patates kızartması ile",
+          "price": "95 TL",
+          "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "603",
+          "name": "Makarna",
+          "description": "Kremalı mantar soslu makarna",
+          "price": "85 TL",
+          "image": "https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "604",
+          "name": "Burger",
+          "description": "El yapımı burger, cheddar peyniri ve patates kızartması",
+          "price": "110 TL",
+          "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "605",
+          "name": "Somon",
+          "description": "Izgara somon, sebzeli bulgur pilavı ile",
+          "price": "130 TL",
+          "image": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Salatalar",
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "701",
+          "name": "Sezar Salata",
+          "description": "Izgara tavuk, kruton, parmesan ve sezar sos",
+          "price": "75 TL",
+          "image": "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "702",
+          "name": "Akdeniz Salata",
+          "description": "Domates, salatalık, zeytin, peynir ve zeytinyağı",
+          "price": "65 TL",
+          "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "703",
+          "name": "Ton Balıklı Salata",
+          "description": "Ton balığı, mısır, yeşillik ve özel sos",
+          "price": "80 TL",
+          "image": "https://images.unsplash.com/photo-1511357840105-748c95f0a7e7?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "704",
+          "name": "Kinoa Salata",
+          "description": "Kinoa, avokado, nar ve taze otlar",
+          "price": "85 TL",
+          "image": "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "705",
+          "name": "Mevsim Salata",
+          "description": "Mevsim yeşillikleri ve sebzeleri",
+          "price": "60 TL",
+          "image": "https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Atıştırmalıklar",
+      "image": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=500&auto=format&fit=crop",
+      "products": [
+        {
+          "id": "801",
+          "name": "Patates Kızartması",
+          "description": "Özel baharatlı patates kızartması",
+          "price": "45 TL",
+          "image": "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "802",
+          "name": "Nachos",
+          "description": "Eritilmiş peynir, guacamole ve salsa soslu nachos",
+          "price": "65 TL",
+          "image": "https://images.unsplash.com/photo-1582169296194-e4d644c48063?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "803",
+          "name": "Soğan Halkası",
+          "description": "Çıtır soğan halkaları, özel sosla",
+          "price": "50 TL",
+          "image": "https://images.unsplash.com/photo-1639024471283-03518883512d?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "804",
+          "name": "Bruschetta",
+          "description": "Domates, fesleğen ve sarımsaklı ekmek dilimleri",
+          "price": "55 TL",
+          "image": "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?q=80&w=500&auto=format&fit=crop"
+        },
+        {
+          "id": "805",
+          "name": "Meze Tabağı",
+          "description": "Humus, babagannuş, cacık ve zeytinyağlılar",
+          "price": "70 TL",
+          "image": "https://images.unsplash.com/photo-1541528772347-9f7a0eefdfe6?q=80&w=500&auto=format&fit=crop"
+        }
+      ]
+    }
+  ]
+}
