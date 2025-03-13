@@ -163,15 +163,20 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
   );
 };
 
-export async function getServerSideProps({ params, req }: { params: { id: string }, req: any }) {
+export async function getServerSideProps({ params }: { params: { id: string } }) {
   try {
-    // Tam URL oluştur
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}`;
+    // Absolute URL oluşturma
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_SITE_URL 
+        ? process.env.NEXT_PUBLIC_SITE_URL
+        : "http://localhost:3000";
     
-    // Tam URL'lerle fetch yap
+    console.log("Using base URL:", baseUrl); // Debug için
+    
+    // Fetch işlemleri
     const categoryRes = await fetch(`${baseUrl}/api/categories/${params.id}`);
+    // ... diğer kodlar
     
     if (!categoryRes.ok) {
       return { notFound: true };

@@ -104,10 +104,15 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
 
 export async function getServerSideProps() {
   try {
-    // Tam URL oluştur
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = process.env.VERCEL_URL || 'localhost:3000';
-    const url = `${protocol}://${host}/api/categories`;
+    // Absolute URL oluşturma
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_SITE_URL 
+        ? process.env.NEXT_PUBLIC_SITE_URL
+        : "http://localhost:3000";
+    
+    const url = `${baseUrl}/api/categories`;
+    console.log("Fetching from:", url); // Debug için
     
     const response = await fetch(url);
     const initialCategories = await response.json();
