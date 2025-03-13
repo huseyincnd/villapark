@@ -165,31 +165,31 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
 
 export async function getServerSideProps({ params }: { params: { id: string } }) {
   try {
-    // Absolute URL oluşturma
+    // Değişecek kısım burası
     const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_SITE_URL 
-        ? process.env.NEXT_PUBLIC_SITE_URL
-        : "http://localhost:3000";
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
     
-    console.log("Using base URL:", baseUrl); // Debug için
-    
-    // Fetch işlemleri
+    // Kategori bilgilerini getir
     const categoryRes = await fetch(`${baseUrl}/api/categories/${params.id}`);
-    // ... diğer kodlar
     
     if (!categoryRes.ok) {
-      return { notFound: true };
+      return {
+        notFound: true,
+      };
     }
     
     const initialCategory = await categoryRes.json();
     
+    // Tüm kategorileri getir
     const categoriesRes = await fetch(`${baseUrl}/api/categories`);
     const initialCategories = await categoriesRes.json();
     
+    // Kategori ürünlerini getir
     const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
     const products = await productsRes.json();
     
+    // Ürünleri kategoriye ekle
     initialCategory.products = products;
     
     return {
@@ -200,9 +200,10 @@ export async function getServerSideProps({ params }: { params: { id: string } })
     };
   } catch (error) {
     console.error('Veri getirilemedi:', error);
-    return { notFound: true };
+    return {
+      notFound: true,
+    };
   }
 }
 
 export default CategoryPage; 
-
