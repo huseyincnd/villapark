@@ -104,12 +104,23 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
 
 export async function getServerSideProps() {
   try {
-    // Değişecek kısım burası
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
+    // Hardcoded URL kullanın
+    const baseUrl = "https://villapark.vercel.app";
     
+    // Alternatif olarak:
+    // const baseUrl = process.env.NODE_ENV === 'production' 
+    //   ? 'https://villapark.vercel.app' 
+    //   : 'http://localhost:3000';
+    
+    // API endpoint'i çağırın
     const response = await fetch(`${baseUrl}/api/categories`);
+    
+    // HTTP durumunu kontrol edin
+    if (!response.ok) {
+      console.error(`API hatası: ${response.status} ${response.statusText}`);
+      throw new Error(`API çağrısı başarısız: ${response.status}`);
+    }
+    
     const initialCategories = await response.json();
 
     return {

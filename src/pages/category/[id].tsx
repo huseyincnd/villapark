@@ -165,28 +165,35 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
 
 export async function getServerSideProps({ params }: { params: { id: string } }) {
   try {
-    // Değişecek kısım burası
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
+    // Hardcoded URL kullanın
+    const baseUrl = "https://villapark.vercel.app";
     
     // Kategori bilgilerini getir
     const categoryRes = await fetch(`${baseUrl}/api/categories/${params.id}`);
     
     if (!categoryRes.ok) {
-      return {
-        notFound: true,
-      };
+      console.error(`Kategori API hatası: ${categoryRes.status}`);
+      return { notFound: true };
     }
     
     const initialCategory = await categoryRes.json();
     
     // Tüm kategorileri getir
     const categoriesRes = await fetch(`${baseUrl}/api/categories`);
+    if (!categoriesRes.ok) {
+      console.error(`Kategoriler API hatası: ${categoriesRes.status}`);
+      throw new Error("Kategoriler alınamadı");
+    }
+    
     const initialCategories = await categoriesRes.json();
     
     // Kategori ürünlerini getir
     const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
+    if (!productsRes.ok) {
+      console.error(`Ürünler API hatası: ${productsRes.status}`);
+      throw new Error("Ürünler alınamadı");
+    }
+    
     const products = await productsRes.json();
     
     // Ürünleri kategoriye ekle
