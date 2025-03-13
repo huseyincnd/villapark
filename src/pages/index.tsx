@@ -104,10 +104,7 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
 
 export async function getServerSideProps() {
   try {
-    // Node.js ortamında çalışacak şekilde fetch kullan
-    const apiUrl = 'http://localhost:3000/api/categories';
-    
-    // Node.js tarafında çalışırken mutlak URL kullan
+    // Tam URL oluştur
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const host = process.env.VERCEL_URL || 'localhost:3000';
     const url = `${protocol}://${host}/api/categories`;
@@ -131,3 +128,4 @@ export async function getServerSideProps() {
 }
 
 export default Home;
+
