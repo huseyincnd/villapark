@@ -20,38 +20,46 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
   const [loading, setLoading] = useState(!initialCategory);
 
   useEffect(() => {
-    // Eğer id değişirse veya başlangıç verileri yoksa verileri yükle
-    if (id && (!initialCategory || !initialCategories)) {
-      const fetchData = async () => {
-        try {
-          setLoading(true);
-          
-          // Kategori bilgilerini getir
-          const categoryRes = await fetch(`/api/categories/${id}`);
-          
-          if (!categoryRes.ok) {
-            throw new Error('Kategori bulunamadı');
-          }
-          
-          const categoryData = await categoryRes.json();
-          setCategory(categoryData);
-          
-          // Tüm kategorileri getir (menü için)
-          const categoriesRes = await fetch('/api/categories');
-          const categoriesData = await categoriesRes.json();
-          setCategories(categoriesData);
-          
-        } catch (error) {
-          console.error('Veri yüklenirken hata oluştu:', error);
-          router.push('/');
-        } finally {
-          setLoading(false);
+    // Kategori ID değiştiğinde veya sayfa ilk yüklendiğinde verileri çek
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Kategori bilgilerini getir
+        const categoryRes = await fetch(`/api/categories/${id}`);
+        
+        if (!categoryRes.ok) {
+          throw new Error('Kategori bulunamadı');
         }
-      };
+        
+        const categoryData = await categoryRes.json();
+        setCategory(categoryData);
+        
+        // Kategori ürünlerini getir
+        const productsRes = await fetch(`/api/products?categoryId=${id}`);
+        const productsData = await productsRes.json();
+        
+        // Ürünleri kategoriye ekle
+        categoryData.products = productsData;
+        setCategory(categoryData);
+        
+        // Tüm kategorileri getir (menü için)
+        const categoriesRes = await fetch('/api/categories');
+        const categoriesData = await categoriesRes.json();
+        setCategories(categoriesData);
+        
+      } catch (error) {
+        console.error('Veri yüklenirken hata oluştu:', error);
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    if (id) {
       fetchData();
     }
-  }, [id, initialCategory, initialCategories, router]);
+  }, [id, router]);
 
   // Sayfa yükleniyorsa yükleniyor göster
   if (loading || !category) {
@@ -149,7 +157,15 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
               return currentId !== catId;
             })
             .map((cat) => (
-              <Link key={cat._id || cat.id} href={`/category/${cat._id || cat.id}`}>
+              <Link 
+                key={cat._id || cat.id} 
+                href={`/category/${cat._id || cat.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setLoading(true);
+                  router.push(`/category/${cat._id || cat.id}`);
+                }}
+              >
                 <div className="bg-white rounded-lg shadow-md p-3 text-center hover:bg-green-50 transition-colors cursor-pointer border border-green-100 hover:border-green-300 transition-all">
                   <p className="font-medium text-green-700">
                     {cat.name}
