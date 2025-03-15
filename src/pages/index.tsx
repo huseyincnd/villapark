@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout/Layout';
 import CategoryCard from '../components/category/CategoryCard';
@@ -11,6 +11,10 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ initialCategories }) => {
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
   const [loading, setLoading] = useState(!initialCategories);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  
+  const menuSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Sunucu tarafında veri gelmemişse veya client-side navigasyonu sonrası API'den kategorileri getir
@@ -32,6 +36,10 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
     }
   }, [initialCategories]);
 
+  const scrollToMenu = () => {
+    menuSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -49,6 +57,86 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
         <meta name="description" content="VillaPark Cafe & Restaurant - Lezzetin ve huzurun adresi" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      {/* Drone Video Section */}
+      <div className="relative w-full rounded-lg overflow-hidden shadow-xl mb-12 bg-black">
+        {/* Video Placeholder (shown until video loads) */}
+        {!videoLoaded && (
+          <div className="absolute inset-0 bg-green-50 flex justify-center items-center">
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="mt-3 text-green-700 font-medium">Video Yükleniyor...</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Drone Video */}
+        <div className="w-full" style={{ height: "70vh", maxHeight: "600px" }}>
+          <video 
+            className="w-full h-full object-cover"
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            preload="none"
+            onLoadedData={() => setVideoLoaded(true)}
+            poster="https://res.cloudinary.com/djtuw9xxu/video/upload/q_auto:eco,f_auto,w_1280/v1742079485/qr-menu/gqwqrwbv3m5dwbt8soxf.jpg"
+          >
+            <source src="https://res.cloudinary.com/djtuw9xxu/video/upload/q_auto:eco,f_auto,w_1280,c_limit/v1742079485/qr-menu/gqwqrwbv3m5dwbt8soxf.mp4" type="video/mp4" />
+            Tarayıcınız video etiketini desteklemiyor.
+          </video>
+        </div>
+        
+        {/* Video Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+        
+        {/* Video Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-center sm:text-left">
+          <div className="container mx-auto max-w-5xl">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-2 font-serif drop-shadow-lg">
+              VillaPark Cafe & Restaurant
+            </h1>
+            <p className="text-xl sm:text-2xl mb-4 drop-shadow-md max-w-2xl">
+              Lezzetin ve huzurun buluştuğu nokta
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center sm:justify-start">
+              <button 
+                onClick={scrollToMenu}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 shadow-lg flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                </svg>
+                Menüyü İncele
+              </button>
+              <button 
+                onClick={() => setShowContactModal(true)}
+                className="bg-white hover:bg-gray-100 text-green-800 font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 shadow-lg flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                İletişim & Konum
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Video Controls */}
+        <div className="absolute top-4 right-4">
+          <button className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-2 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 15.536L9.879 9.879M9.879 9.879L4.222 4.222M9.879 9.879L15.536 4.222M9.879 9.879L4.222 15.536" />
+            </svg>
+          </button>
+        </div>
+      </div>
 
       <div className="relative py-8 mb-12 bg-green-50 rounded-lg shadow-md overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center opacity-10" 
@@ -72,17 +160,19 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-green-800 mb-6 text-center relative">
-        <span className="relative inline-block">
-          Menü Kategorilerimiz
-          <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-green-200 via-green-500 to-green-200"></span>
-        </span>
-      </h2>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {categories.map((category) => (
-          <CategoryCard key={category._id} category={category} />
-        ))}
+      <div ref={menuSectionRef}>
+        <h2 className="text-2xl font-bold text-green-800 mb-6 text-center relative">
+          <span className="relative inline-block">
+            Menü Kategorilerimiz
+            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-green-200 via-green-500 to-green-200"></span>
+          </span>
+        </h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {categories.map((category) => (
+            <CategoryCard key={category._id} category={category} />
+          ))}
+        </div>
       </div>
 
       <div className="mt-16 bg-green-50 rounded-lg p-6 shadow-md">
@@ -97,7 +187,81 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
         <p className="text-green-700">
           Kahvaltıdan akşam yemeğine, tatlılardan içeceklere kadar geniş menümüzle sizleri ağırlamaktan mutluluk duyarız.
         </p>
-    </div>
+      </div>
+
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black bg-opacity-50 transition-opacity duration-300">
+          <div 
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full transform transition-all overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-green-600 p-4 text-white flex justify-between items-center">
+              <h3 className="text-xl font-bold">İletişim & Konum</h3>
+              <button 
+                onClick={() => setShowContactModal(false)}
+                className="text-white hover:text-green-100"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-start mb-6">
+                <div className="bg-green-100 rounded-full p-2 mr-4 text-green-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-gray-700 font-semibold text-lg">Telefon</h4>
+                  <a 
+                    href="tel:+905323590515" 
+                    className="text-green-600 text-lg hover:text-green-700 transition-colors font-medium"
+                  >
+                    0532 359 0515
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="bg-green-100 rounded-full p-2 mr-4 text-green-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-gray-700 font-semibold text-lg">Adres</h4>
+                  <p className="text-gray-600">Bağlar Mah, Atatürk Cd. No: 195, 31500 Reyhanlı/Hatay</p>
+                  <a 
+                    href="https://maps.google.com/?q=Bağlar+Mah,+Atatürk+Cd.+No:+195,+31500+Reyhanlı/Hatay" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center mt-3 text-green-600 hover:text-green-700 transition-colors"
+                  >
+                    <span>Haritada Göster</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-gray-200">
+                <button 
+                  onClick={() => setShowContactModal(false)}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
+                >
+                  <span>Menüye Dön</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
