@@ -55,12 +55,40 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ initialImageUrl = '', onI
         body: formData
       });
 
+      // İlk kontrol - yanıt OK mu?
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Resim yüklenirken bir hata oluştu');
+        // Response içeriğini text olarak oku, JSON değilse hata yakala
+        const responseText = await response.text();
+        let errorMessage = 'Resim yüklenirken bir hata oluştu';
+        
+        try {
+          // Text'i JSON'a çevirmeyi dene
+          const errorData = JSON.parse(responseText);
+          errorMessage = errorData.error || errorMessage;
+        } catch (jsonError) {
+          // JSON parse hatası - ham text'i kullan
+          console.error('Response is not valid JSON:', responseText);
+          errorMessage = responseText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      // Response içeriğini text olarak oku, JSON değilse hata yakala
+      const responseText = await response.text();
+      let data;
+      
+      try {
+        // Text'i JSON'a çevirmeyi dene
+        data = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error('Response is not valid JSON:', responseText);
+        throw new Error('Sunucudan geçersiz yanıt alındı');
+      }
+      
+      if (!data.url) {
+        throw new Error('Resim URL\'i alınamadı');
+      }
       
       // URL'yi güncelle ve parent component'e bildir
       setImageUrl(data.url);

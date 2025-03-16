@@ -41,6 +41,50 @@ async function handler(req, res) {
     // Ürünü güncelle
     case 'PUT':
       try {
+        const { categoryId, order } = req.body;
+        
+        // Önce mevcut ürünü bulalım, sıra değişikliği var mı görmek için
+        const currentProduct = await Product.findById(id);
+        if (!currentProduct) {
+          return res.status(404).json({ success: false, error: 'Product not found' });
+        }
+        
+        // 999 özel değeri için normal güncelleme yap
+        if (order === 999) {
+          const product = await Product.findByIdAndUpdate(id, req.body, {
+            new: true,
+            runValidators: true,
+          });
+          return res.status(200).json(product);
+        }
+        
+        // Eğer kategori ve sıra değeri verilmişse ve değiştiyse
+        if (categoryId && order !== undefined && currentProduct.order !== order) {
+          // Eğer yeni sıra daha küçükse (ileri taşıma)
+          if (order < currentProduct.order) {
+            // Belirtilen yeni sıra ile eski sıra arasındaki ürünleri bir ileriye kaydır
+            await Product.updateMany(
+              { 
+                categoryId: categoryId, 
+                order: { $gte: order, $lt: currentProduct.order, $ne: 999 } // Yeni sıra ile eski sıra arasındakiler
+              }, 
+              { $inc: { order: 1 } } // Sıra değerini 1 arttır
+            );
+          } 
+          // Eğer yeni sıra daha büyükse (geriye taşıma)
+          else if (order > currentProduct.order && order !== 999) {
+            // Belirtilen eski sıra ile yeni sıra arasındaki ürünleri bir geriye kaydır
+            await Product.updateMany(
+              { 
+                categoryId: categoryId, 
+                order: { $gt: currentProduct.order, $lte: order, $ne: 999 } // Eski sıra ile yeni sıra arasındakiler
+              }, 
+              { $inc: { order: -1 } } // Sıra değerini 1 azalt
+            );
+          }
+        }
+        
+        // Ürünü güncelle
         const product = await Product.findByIdAndUpdate(id, req.body, {
           new: true,
           runValidators: true,

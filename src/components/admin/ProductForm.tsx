@@ -11,6 +11,7 @@ interface ProductFormProps {
     price: string;
     image: string;
     categoryId: string;
+    order: number;
   }) => Promise<void>;
   isSubmitting: boolean;
 }
@@ -20,6 +21,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
   const [description, setDescription] = useState(initialData?.description || '');
   const [price, setPrice] = useState(initialData?.price || '');
   const [image, setImage] = useState(initialData?.image || '');
+  const [order, setOrder] = useState(initialData?.order || 999);
   
   // Burada categoryId'yi daha güvenli bir şekilde ayarlıyoruz
   const [categoryId, setCategoryId] = useState('');
@@ -32,6 +34,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
   });
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [categoryError, setCategoryError] = useState('');
+  // Kategorideki mevcut sıra numaralarını takip etmek için
+  const [existingOrders, setExistingOrders] = useState<number[]>([]);
+  const [orderError, setOrderError] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -48,6 +53,45 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
       setCategoryId(catId);
     }
   }, [initialData]);
+
+  // Kategori değiştiğinde mevcut sıra numaralarını getir
+  useEffect(() => {
+    if (categoryId) {
+      fetchExistingOrders(categoryId);
+    }
+  }, [categoryId]);
+
+  // Kategorideki mevcut sıra numaralarını getir
+  const fetchExistingOrders = async (catId: string) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`/api/products?categoryId=${catId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Ürünler yüklenirken bir hata oluştu');
+      }
+
+      const products = await response.json();
+      // Mevcut order değerlerini topla (undefined/null değerleri hariç tut)
+      const orders = products
+        .filter((p: any) => p._id !== initialData?._id && p.order !== undefined && p.order !== null)
+        .map((p: any) => p.order);
+      
+      setExistingOrders(orders);
+    } catch (error) {
+      console.error('Sıra numaralarını getirirken hata:', error);
+    }
+  };
+
+  // Order değiştiğinde kontrol et
+  useEffect(() => {
+    // Artık sıra numarası kontrolü yapmıyoruz, çünkü API otomatik olarak sıralamayı düzenliyor
+    setOrderError('');
+  }, [order, existingOrders]);
 
   const fetchCategories = async () => {
     try {
@@ -117,8 +161,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
       return;
     }
     
+    // Sıra numarası kontrolünü kaldırıyoruz, API otomatik olarak sıralamayı düzenleyecek
+    // if (orderError) {
+    //   return;
+    // }
+    
     // Form verilerini gönder
-    await onSubmit({ name, description, price, image, categoryId });
+    await onSubmit({ name, description, price, image, categoryId, order });
   };
 
   // Debug bilgisi ekle (geliştirme aşamasında yardımcı olabilir)
@@ -247,6 +296,50 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
           <p className="mt-1 text-sm text-gray-500">
             Görsel için URL girebilir veya yeni bir görsel yükleyebilirsiniz
           </p>
+        </div>
+
+        {/* Sıralama alanı */}
+        <div>
+          <label htmlFor="order" className="block text-sm font-medium text-gray-700">
+            Sıralama
+          </label>
+          <div className="mt-1">
+            <input
+              type="number"
+              id="order"
+              name="order"
+              value={order}
+              onChange={(e) => setOrder(parseInt(e.target.value) || 999)}
+              className={`shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md ${
+                orderError ? 'border-red-300' : ''
+              }`}
+              disabled={isSubmitting}
+              min="1"
+              max="999"
+            />
+            {orderError && <p className="mt-1 text-sm text-red-600">{orderError}</p>}
+            <p className="mt-1 text-sm text-gray-500">
+              Ürünün gösterim sırası (düşük sayılar önce gösterilir)
+            </p>
+            <div className="text-xs text-gray-500 mt-1 space-y-1">
+              <p>
+                <span className="font-medium">Otomatik Sıralama:</span> Belirli bir sıra numarası girdiğinizde, sistemimiz çakışmaları otomatik olarak çözer. Eğer aynı sıra numarasına sahip başka bir ürün varsa, o ve sonrasındaki ürünler otomatik olarak bir sonraki sıraya kaydırılır.
+              </p>
+              <p>
+                <span className="font-medium">Not:</span> 999 değeri özel bir anlama sahiptir ve ürünleri listenin sonunda gösterir. Bu sıra numarası benzersiz olmak zorunda değildir ve otomatik kaydırmadan etkilenmez.
+              </p>
+            </div>
+            {existingOrders.length > 0 && (
+              <div className="mt-2 text-xs text-gray-500">
+                <span>Bu kategoride kullanılan sıra numaraları (bilgi amaçlı): </span>
+                {existingOrders.sort((a, b) => a - b).map((o, i) => (
+                  <span key={i} className="inline-flex items-center mx-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100">
+                    {o}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Görsel önizleme */}

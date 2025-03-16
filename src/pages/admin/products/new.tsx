@@ -16,6 +16,7 @@ export default function NewProduct() {
     price: string;
     image: string;
     categoryId: string;
+    order: number;
   }) => {
     setIsSubmitting(true);
     setError('');

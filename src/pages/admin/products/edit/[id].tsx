@@ -58,6 +58,7 @@ export default function EditProduct() {
     price: string;
     image: string;
     categoryId: string;
+    order: number;
   }) => {
     setIsSubmitting(true);
     setError('');

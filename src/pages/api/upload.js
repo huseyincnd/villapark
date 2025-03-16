@@ -2,6 +2,8 @@ import { uploadImage } from '../../../lib/cloudinary';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
+import fs from 'fs';
+import cloudinary from '../../../lib/cloudinary';
 
 // Multer konfigürasyonu (belleğe upload için)
 const storage = multer.memoryStorage();
@@ -62,17 +64,40 @@ export default async function handler(req, res) {
     }
 
     // Cloudinary'ye yükle
-    const uploadResult = await uploadImage(req.file);
+    try {
+      // Cloudinary'ye buffer'ı yükle - multer.memoryStorage() kullandığımız için dosya diskde değil memory'de
+      const b64 = Buffer.from(req.file.buffer).toString('base64');
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+      
+      const result = await cloudinary.cloudinary.uploader.upload(dataURI, {
+        folder: 'qr-menu/products',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+        transformation: [{ width: 800, height: 800, crop: 'limit' }]
+      });
 
-    if (!uploadResult.success) {
-      return res.status(500).json({ error: uploadResult.error });
+      // Başarılı yanıt
+      if (result.secure_url) {
+        res.status(200).json({
+          success: true,
+          url: result.secure_url
+        });
+      } else {
+        // Cloudinary başarı döndürdü ama URL yok
+        console.error('Cloudinary URL missing:', result);
+        res.status(400).json({
+          success: false,
+          error: 'Resim URL\'i alınamadı'
+        });
+      }
+    } catch (error) {
+      console.error('Cloudinary upload error:', error);
+      // Hata yanıtı
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Resim yüklenirken bir hata oluştu'
+      });
     }
-
-    // Başarılı yanıt
-    return res.status(200).json({ 
-      url: uploadResult.url, 
-      public_id: uploadResult.public_id 
-    });
+    // Geçici dosya cleanup kaldırıldı çünkü memory storage kullanıyoruz
 
   } catch (error) {
     console.error('Upload error:', error);

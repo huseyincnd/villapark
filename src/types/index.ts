@@ -7,6 +7,7 @@ export interface Product {
   price: string;
   image: string;
   categoryId?: string | { _id?: string; id?: string; name?: string }; // String veya populate edilmiş obje
+  order?: number; // Ürünün kategorideki sıralama değeri
 }
 
 // Kategori tipi tanımlaması

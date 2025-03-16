@@ -23,6 +23,10 @@ const ProductSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: [true, 'Kategori ID gereklidir']
+  },
+  order: {
+    type: Number,
+    default: 999 // Yüksek bir değer, böylece sıra belirtilmemiş ürünler en sona eklenir
   }
 }, { 
   timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler

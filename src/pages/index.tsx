@@ -127,15 +127,6 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
             </div>
           </div>
         </div>
-        
-        {/* Video Controls */}
-        <div className="absolute top-4 right-4">
-          <button className="bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-2 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 15.536L9.879 9.879M9.879 9.879L4.222 4.222M9.879 9.879L15.536 4.222M9.879 9.879L4.222 15.536" />
-            </svg>
-          </button>
-        </div>
       </div>
 
       <div className="relative py-8 mb-12 bg-green-50 rounded-lg shadow-md overflow-hidden">
