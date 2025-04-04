@@ -59,10 +59,10 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
       </Head>
 
       {/* Drone Video Section */}
-      <div className="relative w-full rounded-lg overflow-hidden shadow-xl mb-12 bg-black">
+      <div className="relative w-full rounded-lg overflow-hidden shadow-xl mb-12 bg-gradient-to-br from-green-700 to-green-900">
         {/* Video Placeholder (shown until video loads) */}
         {!videoLoaded && (
-          <div className="absolute inset-0 bg-green-50 flex justify-center items-center">
+          <div className="absolute inset-0 z-10 bg-gradient-to-br from-green-50 to-green-100 flex justify-center items-center">
             <div className="animate-pulse flex flex-col items-center">
               <div className="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,25 +75,72 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
           </div>
         )}
         
-        {/* Drone Video */}
-        <div className="w-full" style={{ height: "70vh", maxHeight: "600px" }}>
-          <video 
-            className="w-full h-full object-cover"
-            autoPlay 
-            muted 
-            loop 
-            playsInline
-            preload="none"
-            onLoadedData={() => setVideoLoaded(true)}
-            poster="https://res.cloudinary.com/djtuw9xxu/video/upload/q_auto:eco,f_auto,w_1280/v1742079485/qr-menu/gqwqrwbv3m5dwbt8soxf.jpg"
-          >
-            <source src="https://res.cloudinary.com/djtuw9xxu/video/upload/q_auto:eco,f_auto,w_1280,c_limit/v1742079485/qr-menu/gqwqrwbv3m5dwbt8soxf.mp4" type="video/mp4" />
-            Tarayıcınız video etiketini desteklemiyor.
-          </video>
+        {/* Video container with decorative elements */}
+        <div className="flex justify-center">
+          {/* Left decorative pattern */}
+          <div className="hidden lg:block w-1/6 bg-gradient-to-br from-green-700 to-green-900 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-full h-full">
+                {[...Array(20)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className="absolute rounded-full bg-green-300" 
+                    style={{
+                      width: `${Math.random() * 20 + 5}px`,
+                      height: `${Math.random() * 20 + 5}px`,
+                      top: `${Math.random() * 100}%`,
+                      left: `${Math.random() * 100}%`,
+                      opacity: Math.random() * 0.5 + 0.1
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Drone Video */}
+          <div className="w-full lg:w-2/3" style={{ height: "70vh", maxHeight: "600px", overflow: "hidden" }}>
+            <div className="w-full h-full relative overflow-hidden transform scale-110">
+              <iframe 
+                src="https://iframe.mediadelivery.net/embed/405685/9c33e4aa-44b1-45d3-adbe-42fe02c7fa7c?autoplay=true&loop=true&muted=true&preload=true" 
+                loading="lazy"
+                className="absolute inset-0 w-full h-full"
+                style={{ 
+                  border: "none",
+                  objectFit: "cover", 
+                  transform: "scale(1.1)" 
+                }}
+                allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
+                allowFullScreen={true}
+                onLoad={() => setVideoLoaded(true)}
+              />
+            </div>
+          </div>
+          
+          {/* Right decorative pattern */}
+          <div className="hidden lg:block w-1/6 bg-gradient-to-bl from-green-700 to-green-900 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-full h-full">
+                {[...Array(20)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className="absolute rounded-full bg-green-300" 
+                    style={{
+                      width: `${Math.random() * 20 + 5}px`,
+                      height: `${Math.random() * 20 + 5}px`,
+                      top: `${Math.random() * 100}%`,
+                      left: `${Math.random() * 100}%`,
+                      opacity: Math.random() * 0.5 + 0.1
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
         
         {/* Video Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-green-900 via-transparent to-transparent opacity-80 pointer-events-none"></div>
         
         {/* Video Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-center sm:text-left">
@@ -257,15 +304,10 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
   );
 };
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     // Hardcoded URL kullanın
     const baseUrl = "https://villapark.vercel.app";
-    
-    // Alternatif olarak:
-    // const baseUrl = process.env.NODE_ENV === 'production' 
-    //   ? 'https://villapark.vercel.app' 
-    //   : 'http://localhost:3000';
     
     // API endpoint'i çağırın
     const response = await fetch(`${baseUrl}/api/categories`);
@@ -282,6 +324,7 @@ export async function getServerSideProps() {
       props: {
         initialCategories,
       },
+      revalidate: 3600 // 1 saat arayla yeniden oluştur
     };
   } catch (error) {
     console.error('Kategoriler getirilemedi:', error);
@@ -289,6 +332,7 @@ export async function getServerSideProps() {
       props: {
         initialCategories: [],
       },
+      revalidate: 3600
     };
   }
 }

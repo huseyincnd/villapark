@@ -26,6 +26,8 @@ async function handler(req, res) {
           })
         );
         
+        // Önbelleğe alma başlıklarını ekle
+        res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
         res.status(200).json(categoriesWithProductCounts);
       } catch (error) {
         res.status(400).json({ success: false, error: error.message });

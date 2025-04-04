@@ -179,7 +179,38 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
   );
 };
 
-export async function getServerSideProps({ params }: { params: { id: string } }) {
+export async function getStaticPaths() {
+  try {
+    // Hardcoded URL kullanın
+    const baseUrl = "https://villapark.vercel.app";
+    
+    // Tüm kategorileri getir
+    const categoriesRes = await fetch(`${baseUrl}/api/categories`);
+    if (!categoriesRes.ok) {
+      return { paths: [], fallback: 'blocking' };
+    }
+    
+    const categories = await categoriesRes.json();
+    
+    // Kategori ID'lerinden paths oluştur
+    const paths = categories.map((category: any) => ({
+      params: { id: category._id.toString() }
+    }));
+    
+    return {
+      paths,
+      fallback: 'blocking' // Talep üzerine olmayan sayfaları oluştur
+    };
+  } catch (error) {
+    console.error('Paths oluşturulamadı:', error);
+    return {
+      paths: [],
+      fallback: 'blocking'
+    };
+  }
+}
+
+export async function getStaticProps({ params }: { params: { id: string } }) {
   try {
     // Hardcoded URL kullanın
     const baseUrl = "https://villapark.vercel.app";
@@ -220,11 +251,13 @@ export async function getServerSideProps({ params }: { params: { id: string } })
         initialCategory,
         initialCategories,
       },
+      revalidate: 3600 // 1 saat arayla yeniden oluştur
     };
   } catch (error) {
     console.error('Veri getirilemedi:', error);
     return {
       notFound: true,
+      revalidate: 3600
     };
   }
 }
