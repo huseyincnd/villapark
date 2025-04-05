@@ -19,6 +19,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
   const [loading, setLoading] = useState(!initialCategory);
 
+  // Eğer sayfa fallback ise (yani henüz oluşturulmadıysa) yükleniyor göster
+  if (router.isFallback) {
+    return (
+      <Layout>
+        <div className="flex flex-col justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600 mb-4"></div>
+          <p className="text-green-600 font-medium">Kategoriler yükleniyor...</p>
+        </div>
+      </Layout>
+    );
+  }
+
   useEffect(() => {
     // Kategori ID değiştiğinde veya sayfa ilk yüklendiğinde verileri çek
     const fetchData = async () => {
@@ -187,7 +199,7 @@ export async function getStaticPaths() {
     // Tüm kategorileri getir
     const categoriesRes = await fetch(`${baseUrl}/api/categories`);
     if (!categoriesRes.ok) {
-      return { paths: [], fallback: 'blocking' };
+      return { paths: [], fallback: true };
     }
     
     const categories = await categoriesRes.json();
@@ -199,13 +211,13 @@ export async function getStaticPaths() {
     
     return {
       paths,
-      fallback: 'blocking' // Talep üzerine olmayan sayfaları oluştur
+      fallback: true // 'blocking' yerine 'true' kullan
     };
   } catch (error) {
     console.error('Paths oluşturulamadı:', error);
     return {
       paths: [],
-      fallback: 'blocking'
+      fallback: true
     };
   }
 }
@@ -220,7 +232,10 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
     
     if (!categoryRes.ok) {
       console.error(`Kategori API hatası: ${categoryRes.status}`);
-      return { notFound: true };
+      return { 
+        notFound: true,
+        revalidate: 2000 // 24 saat
+      };
     }
     
     const initialCategory = await categoryRes.json();
@@ -251,13 +266,13 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
         initialCategory,
         initialCategories,
       },
-      revalidate: 3600 // 1 saat arayla yeniden oluştur
+      revalidate: 2000 // 24 saat 
     };
   } catch (error) {
     console.error('Veri getirilemedi:', error);
     return {
       notFound: true,
-      revalidate: 3600
+      revalidate: 2000 // 24 saat
     };
   }
 }
