@@ -19,6 +19,9 @@ export default async function handler(req, res) {
     const pagesToRevalidate = [
       '/',
       '/category/67d21b747ee76f02a06f389b', // Soğuk İçecekler
+      '/category/67d21b747ee76f02a06f38a9', // Sıcak İçecekler
+      '/category/67d21b757ee76f02a06f38b7', // Tatlı ve Pasta
+      '/category/67d21b737ee76f02a06f3881', // Kahvaltılar
       // Diğer kategoriler...
     ];
     

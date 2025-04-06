@@ -320,11 +320,12 @@ export async function getStaticPaths() {
       return { paths: [], fallback: true };
     }
     
-    // Doğrudan soğuk içecekler ID'sini ekleyelim
+    // Doğrudan bilinen kategori ID'lerini ekleyelim
     const knownCategoryIds = [
       '67d21b747ee76f02a06f389b', // Soğuk İçecekler
       '67d21b747ee76f02a06f38a9', // Sıcak İçecekler  
       '67d21b757ee76f02a06f38b7', // Tatlı ve Pasta
+      '67d21b737ee76f02a06f3881', // Kahvaltılar
       // Diğer bilinen kategori ID'lerini buraya ekleyebilirsiniz
     ];
     
