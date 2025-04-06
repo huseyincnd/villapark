@@ -5,7 +5,7 @@ import { isAuthenticated } from '../../../../lib/auth';
 
 async function handler(req, res) {
   const { method } = req;
-  const { categoryId } = req.query;
+  const { categoryId, limit, skip } = req.query;
 
   await dbConnect();
 
@@ -16,7 +16,19 @@ async function handler(req, res) {
         const query = categoryId ? { categoryId } : {};
         
         // Önce ürünleri çekelim
-        let products = await Product.find(query).populate('categoryId');
+        let productsQuery = Product.find(query).populate('categoryId');
+        
+        // Eğer skip belirtilmişse uygula
+        if (skip && !isNaN(parseInt(skip))) {
+          productsQuery = productsQuery.skip(parseInt(skip));
+        }
+        
+        // Eğer limit belirtilmişse uygula
+        if (limit && !isNaN(parseInt(limit))) {
+          productsQuery = productsQuery.limit(parseInt(limit));
+        }
+        
+        let products = await productsQuery;
         
         // Sıralamayı manuel olarak yapalım
         products.sort((a, b) => {

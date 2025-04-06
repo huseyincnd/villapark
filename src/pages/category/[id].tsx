@@ -6,15 +6,6 @@ import ProductCard from '../../components/product/ProductCard';
 import { Category, Product } from '../../types';
 import Link from 'next/link';
 
-// Helper to determine the base URL
-const getBaseUrl = () => {
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  // Fallback for local development or other environments
-  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'; 
-};
-
 interface CategoryPageProps {
   initialCategory?: Category;
   initialCategories?: Category[];
@@ -27,6 +18,13 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
   const [category, setCategory] = useState<Category | null>(initialCategory || null);
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
   const [loading, setLoading] = useState(!initialCategory);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  
+  // Soğuk İçecekler kategorisi için ID kontrolü
+  const isColdDrinks = category?._id?.toString() === '67d21b747ee76f02a06f389b' || 
+                     category?.id?.toString() === '67d21b747ee76f02a06f389b';
 
   // Eğer sayfa fallback ise (yani henüz oluşturulmadıysa) yükleniyor göster
   if (router.isFallback) {
@@ -34,7 +32,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
       <Layout>
         <div className="flex flex-col justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600 mb-4"></div>
-          <p className="text-green-600 font-medium">Kategoriler yükleniyor...</p>
+          <p className="text-green-600 font-medium">Kategori yükleniyor...</p>
         </div>
       </Layout>
     );
@@ -54,15 +52,24 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
         }
         
         const categoryData = await categoryRes.json();
-        setCategory(categoryData);
         
-        // Kategori ürünlerini getir
-        const productsRes = await fetch(`/api/products?categoryId=${id}`);
+        // Kategori ürünlerini getir (Soğuk içecekler için ilk 20 ürün)
+        const isColdDrinksCheck = categoryData._id?.toString() === '67d21b747ee76f02a06f389b' || 
+                                categoryData.id?.toString() === '67d21b747ee76f02a06f389b';
+        
+        let productsUrl = `/api/products?categoryId=${id}`;
+        if (isColdDrinksCheck) {
+          productsUrl += '&limit=20';
+        }
+        
+        const productsRes = await fetch(productsUrl);
         const productsData = await productsRes.json();
         
         // Ürünleri kategoriye ekle
         categoryData.products = productsData;
+        categoryData.isColdDrinks = isColdDrinksCheck;
         setCategory(categoryData);
+        setHasMore(isColdDrinksCheck && productsData.length >= 20);
         
         // Tüm kategorileri getir (menü için)
         const categoriesRes = await fetch('/api/categories');
@@ -79,8 +86,41 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
 
     if (id) {
       fetchData();
+      setCurrentPage(1);
     }
   }, [id, router]);
+
+  // Daha fazla ürün yükleme fonksiyonu (Soğuk İçecekler için)
+  const loadMoreProducts = async () => {
+    if (!isColdDrinks || loadingMore || !hasMore) return;
+    
+    try {
+      setLoadingMore(true);
+      const nextPage = currentPage + 1;
+      const skip = currentPage * 20;
+      
+      const response = await fetch(`/api/products?categoryId=${id}&limit=20&skip=${skip}`);
+      const newProducts = await response.json();
+      
+      if (newProducts.length === 0) {
+        setHasMore(false);
+      } else {
+        setCategory(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            products: [...(prev.products || []), ...newProducts]
+          };
+        });
+        setCurrentPage(nextPage);
+        setHasMore(newProducts.length >= 20);
+      }
+    } catch (error) {
+      console.error('Daha fazla ürün yüklenirken hata oluştu:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   // Sayfa yükleniyorsa yükleniyor göster
   if (loading || !category) {
@@ -164,6 +204,34 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
         ))}
       </div>
 
+      {/* Soğuk İçecekler için "Daha Fazla Yükle" butonu */}
+      {isColdDrinks && hasMore && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={loadMoreProducts}
+            disabled={loadingMore}
+            className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors inline-flex items-center"
+          >
+            {loadingMore ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Yükleniyor...
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                Daha Fazla Göster
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       <div className="mt-16">
         <h2 className="text-2xl font-bold text-green-800 mb-6 relative inline-block">
           Diğer Kategoriler
@@ -201,24 +269,64 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
 };
 
 export async function getStaticPaths() {
-  const baseUrl = getBaseUrl();
   try {
-    const categoriesRes = await fetch(`${baseUrl}/api/categories`);
-    if (!categoriesRes.ok) {
-      console.error(`getStaticPaths: Failed to fetch categories from ${baseUrl}/api/categories, status: ${categoriesRes.status}`);
+    // Hem production URL hem de fallback URL'i deneyelim
+    const baseUrls = [
+      "https://villapark.vercel.app",
+      "http://localhost:3000"
+    ];
+    
+    let categories = [];
+    let success = false;
+    
+    // Her URL'i deneyelim
+    for (const baseUrl of baseUrls) {
+      try {
+        console.log(`Kategoriler için ${baseUrl} deneniyor...`);
+        const categoriesRes = await fetch(`${baseUrl}/api/categories`);
+        if (categoriesRes.ok) {
+          categories = await categoriesRes.json();
+          success = true;
+          console.log(`Kategoriler ${baseUrl}'den başarıyla alındı.`);
+          break;
+        }
+      } catch (e) {
+        console.error(`${baseUrl}'den kategoriler alınamadı:`, e);
+      }
+    }
+    
+    // Eğer API'lerden hiçbiri çalışmazsa, boş paths döndür ama fallback true olsun
+    if (!success || !categories || categories.length === 0) {
+      console.log('API çağrıları başarısız oldu, fallback: true ile devam ediliyor');
       return { paths: [], fallback: true };
     }
     
-    const categories = await categoriesRes.json();
+    // Doğrudan soğuk içecekler ID'sini ekleyelim
+    const knownCategoryIds = [
+      '67d21b747ee76f02a06f389b', // Soğuk İçecekler
+      // Diğer bilinen kategori ID'lerini buraya ekleyebilirsiniz
+    ];
     
-    // Kategori ID'lerinden paths oluştur
-    const paths = categories.map((category: any) => ({
+    // API'den gelen kategorilerden paths oluştur
+    const pathsFromAPI = categories.map((category: any) => ({
       params: { id: category._id.toString() }
     }));
     
+    // Bilinen ID'lerden paths oluştur
+    const pathsFromKnownIds = knownCategoryIds.map(id => ({
+      params: { id }
+    }));
+    
+    // Tüm paths'leri birleştir ve tekrarları kaldır
+    const allPaths = [...pathsFromAPI, ...pathsFromKnownIds];
+    const uniquePaths = Array.from(new Set(allPaths.map(path => path.params.id)))
+      .map(id => ({ params: { id: id.toString() } }));
+    
+    console.log(`Toplam ${uniquePaths.length} kategori sayfası için paths oluşturuldu`);
+    
     return {
-      paths,
-      fallback: true // 'blocking' yerine 'true' kullan
+      paths: uniquePaths,
+      fallback: true 
     };
   } catch (error) {
     console.error('Paths oluşturulamadı:', error);
@@ -230,15 +338,18 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: { id: string } }) {
-  const baseUrl = getBaseUrl();
   try {
+    // Hardcoded URL kullanın
+    const baseUrl = "https://villapark.vercel.app";
+    
+    // Kategori bilgilerini getir
     const categoryRes = await fetch(`${baseUrl}/api/categories/${params.id}`);
     
     if (!categoryRes.ok) {
-      console.error(`getStaticProps: Failed to fetch category ${params.id} from ${baseUrl}/api/categories/${params.id}, status: ${categoryRes.status}`);
+      console.error(`Kategori API hatası: ${categoryRes.status}`);
       return { 
         notFound: true,
-        revalidate: 2000 // 24 saat
+        revalidate: 86400 // 24 saat
       };
     }
     
@@ -247,38 +358,53 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
     // Tüm kategorileri getir
     const categoriesRes = await fetch(`${baseUrl}/api/categories`);
     if (!categoriesRes.ok) {
-      console.error(`getStaticProps: Failed to fetch all categories from ${baseUrl}/api/categories, status: ${categoriesRes.status}`);
+      console.error(`Kategoriler API hatası: ${categoriesRes.status}`);
       throw new Error("Kategoriler alınamadı");
     }
     
     const initialCategories = await categoriesRes.json();
     
-    // Kategori ürünlerini getir
-    const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
-    if (!productsRes.ok) {
-      console.error(`getStaticProps: Failed to fetch products for category ${params.id} from ${baseUrl}/api/products?categoryId=${params.id}, status: ${productsRes.status}`);
-      throw new Error("Ürünler alınamadı");
-    }
+    // Soğuk içecekler kategorisi için özel işlem (id'yi kontrol et)
+    const isColdDrinks = params.id === '67d21b747ee76f02a06f389b';
     
-    const products = await productsRes.json();
+    let products = [];
+    if (isColdDrinks) {
+      // Soğuk içecekler için sadece ilk 20 ürünü al
+      const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}&limit=20`);
+      if (productsRes.ok) {
+        products = await productsRes.json();
+        console.log("Soğuk içecekler kategorisi için ilk 20 ürün yüklendi");
+      } else {
+        console.error(`Ürünler API hatası: ${productsRes.status}`);
+      }
+    } else {
+      // Diğer kategoriler için normal işlem
+      const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
+      if (!productsRes.ok) {
+        console.error(`Ürünler API hatası: ${productsRes.status}`);
+        throw new Error("Ürünler alınamadı");
+      }
+      products = await productsRes.json();
+    }
     
     // Ürünleri kategoriye ekle
     initialCategory.products = products;
+    initialCategory.isColdDrinks = isColdDrinks;
     
     return {
       props: {
         initialCategory,
         initialCategories,
       },
-      revalidate: 2000 // 24 saat 
+      revalidate: 86400 // 24 saat 
     };
   } catch (error) {
     console.error('Veri getirilemedi:', error);
     return {
       notFound: true,
-      revalidate: 2000 // 24 saat
+      revalidate: 86400 // 24 saat
     };
   }
 }
 
-export default CategoryPage;
+export default CategoryPage; 
