@@ -13,38 +13,42 @@ async function handler(req, res) {
     // Tüm ürünleri getir
     case 'GET':
       try {
+        console.log('API çağrısı alındı:', { categoryId, limit, skip });
+        
         const query = categoryId ? { categoryId } : {};
         
-        // Önce ürünleri çekelim
-        let productsQuery = Product.find(query).populate('categoryId');
+        // Önce veritabanı sorgusunu oluştur
+        let productsQuery = Product.find(query);
         
-        // Eğer skip belirtilmişse uygula
+        // Populate işlemini ekle
+        productsQuery = productsQuery.populate('categoryId');
+        
+        // Önce sıralama işlemini MongoDB'de uygula
+        productsQuery = productsQuery.sort({ order: 1 });
+        
+        // Pagination için offset (skip) uygula
         if (skip && !isNaN(parseInt(skip))) {
-          productsQuery = productsQuery.skip(parseInt(skip));
+          const skipValue = parseInt(skip);
+          console.log(`${skipValue} ürün atlanıyor`);
+          productsQuery = productsQuery.skip(skipValue);
         }
         
-        // Eğer limit belirtilmişse uygula
+        // Limit uygula
         if (limit && !isNaN(parseInt(limit))) {
-          productsQuery = productsQuery.limit(parseInt(limit));
+          const limitValue = parseInt(limit);
+          console.log(`Maksimum ${limitValue} ürün alınıyor`);
+          productsQuery = productsQuery.limit(limitValue);
         }
         
+        // Sorguyu çalıştır
         let products = await productsQuery;
-        
-        // Sıralamayı manuel olarak yapalım
-        products.sort((a, b) => {
-          // a orderı yoksa (veya null/undefined ise) en sona koy (yüksek değer ver)
-          const orderA = a.order === undefined || a.order === null ? 9999 : a.order;
-          // b orderı yoksa (veya null/undefined ise) en sona koy (yüksek değer ver)
-          const orderB = b.order === undefined || b.order === null ? 9999 : b.order;
-          
-          // Küçükten büyüğe sırala
-          return orderA - orderB;
-        });
+        console.log(`${products.length} ürün bulundu`);
         
         // Önbelleğe alma başlıklarını ekle
         res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
         res.status(200).json(products);
       } catch (error) {
+        console.error('Ürünler alınırken hata:', error);
         res.status(400).json({ success: false, error: error.message });
       }
       break;

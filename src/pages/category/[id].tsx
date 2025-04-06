@@ -96,27 +96,46 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
     
     try {
       setLoadingMore(true);
-      const nextPage = currentPage + 1;
-      const skip = currentPage * 20;
       
-      const response = await fetch(`/api/products?categoryId=${id}&limit=20&skip=${skip}`);
+      // Şu anki ürün sayısını alın ve bu değeri skip olarak kullanın
+      const currentProductCount = category?.products?.length || 0;
+      
+      console.log(`Daha fazla ürün yükleniyor: mevcut=${currentProductCount}`);
+      
+      // Hata ayıklama için API URL'ini konsola yazdır
+      const apiUrl = `/api/products?categoryId=${id}&limit=20&skip=${currentProductCount}`;
+      console.log('API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        throw new Error(`API hatası: ${response.status}`);
+      }
+      
       const newProducts = await response.json();
+      console.log(`${newProducts.length} yeni ürün yüklendi`);
       
       if (newProducts.length === 0) {
         setHasMore(false);
       } else {
         setCategory(prev => {
           if (!prev) return prev;
+          
+          // Mevcut ürünler yoksa boş bir dizi kullan
+          const currentProducts = prev.products || [];
+          
           return {
             ...prev,
-            products: [...(prev.products || []), ...newProducts]
+            products: [...currentProducts, ...newProducts]
           };
         });
-        setCurrentPage(nextPage);
+        
+        setCurrentPage(prev => prev + 1);
         setHasMore(newProducts.length >= 20);
       }
     } catch (error) {
       console.error('Daha fazla ürün yüklenirken hata oluştu:', error);
+      setHasMore(false); // Hata durumunda daha fazla yükleme yapma
     } finally {
       setLoadingMore(false);
     }
@@ -304,6 +323,8 @@ export async function getStaticPaths() {
     // Doğrudan soğuk içecekler ID'sini ekleyelim
     const knownCategoryIds = [
       '67d21b747ee76f02a06f389b', // Soğuk İçecekler
+      '67d21b747ee76f02a06f38a9', // Sıcak İçecekler  
+      '67d21b757ee76f02a06f38b7', // Tatlı ve Pasta
       // Diğer bilinen kategori ID'lerini buraya ekleyebilirsiniz
     ];
     
