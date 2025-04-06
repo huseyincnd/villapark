@@ -6,6 +6,15 @@ import ProductCard from '../../components/product/ProductCard';
 import { Category, Product } from '../../types';
 import Link from 'next/link';
 
+// Helper to determine the base URL
+const getBaseUrl = () => {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Fallback for local development or other environments
+  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'; 
+};
+
 interface CategoryPageProps {
   initialCategory?: Category;
   initialCategories?: Category[];
@@ -192,13 +201,11 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
 };
 
 export async function getStaticPaths() {
+  const baseUrl = getBaseUrl();
   try {
-    // Hardcoded URL kullanın
-    const baseUrl = "https://villapark.vercel.app";
-    
-    // Tüm kategorileri getir
     const categoriesRes = await fetch(`${baseUrl}/api/categories`);
     if (!categoriesRes.ok) {
+      console.error(`getStaticPaths: Failed to fetch categories from ${baseUrl}/api/categories, status: ${categoriesRes.status}`);
       return { paths: [], fallback: true };
     }
     
@@ -223,15 +230,12 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: { id: string } }) {
+  const baseUrl = getBaseUrl();
   try {
-    // Hardcoded URL kullanın
-    const baseUrl = "https://villapark.vercel.app";
-    
-    // Kategori bilgilerini getir
     const categoryRes = await fetch(`${baseUrl}/api/categories/${params.id}`);
     
     if (!categoryRes.ok) {
-      console.error(`Kategori API hatası: ${categoryRes.status}`);
+      console.error(`getStaticProps: Failed to fetch category ${params.id} from ${baseUrl}/api/categories/${params.id}, status: ${categoryRes.status}`);
       return { 
         notFound: true,
         revalidate: 2000 // 24 saat
@@ -243,7 +247,7 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
     // Tüm kategorileri getir
     const categoriesRes = await fetch(`${baseUrl}/api/categories`);
     if (!categoriesRes.ok) {
-      console.error(`Kategoriler API hatası: ${categoriesRes.status}`);
+      console.error(`getStaticProps: Failed to fetch all categories from ${baseUrl}/api/categories, status: ${categoriesRes.status}`);
       throw new Error("Kategoriler alınamadı");
     }
     
@@ -252,7 +256,7 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
     // Kategori ürünlerini getir
     const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
     if (!productsRes.ok) {
-      console.error(`Ürünler API hatası: ${productsRes.status}`);
+      console.error(`getStaticProps: Failed to fetch products for category ${params.id} from ${baseUrl}/api/products?categoryId=${params.id}, status: ${productsRes.status}`);
       throw new Error("Ürünler alınamadı");
     }
     
@@ -277,4 +281,4 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
   }
 }
 
-export default CategoryPage; 
+export default CategoryPage;
