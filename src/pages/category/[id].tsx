@@ -401,11 +401,11 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
       }
     } else {
       // Diğer kategoriler için normal işlem
-      const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
-      if (!productsRes.ok) {
-        console.error(`Ürünler API hatası: ${productsRes.status}`);
-        throw new Error("Ürünler alınamadı");
-      }
+    const productsRes = await fetch(`${baseUrl}/api/products?categoryId=${params.id}`);
+    if (!productsRes.ok) {
+      console.error(`Ürünler API hatası: ${productsRes.status}`);
+      throw new Error("Ürünler alınamadı");
+    }
       products = await productsRes.json();
     }
     
