@@ -16,6 +16,16 @@ export default function Categories() {
     fetchProducts();
   }, []);
 
+  // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
+  const triggerRevalidate = async () => {
+    try {
+      await fetch('/api/revalidate?secret=villapark2024');
+      console.log('Sayfalar yeniden oluşturuldu');
+    } catch (error) {
+      console.error('Revalidate hatası:', error);
+    }
+  };
+
   const fetchCategories = async () => {
     try {
       setLoading(true);
@@ -80,6 +90,9 @@ export default function Categories() {
 
       // Başarıyla silindiyse listeyi güncelle
       fetchCategories();
+      
+      // Sayfaları yeniden oluştur
+      await triggerRevalidate();
     } catch (error) {
       console.error('Kategori silme hatası:', error);
       alert('Kategori silinirken bir hata oluştu');
@@ -104,6 +117,9 @@ export default function Categories() {
 
       // Başarıyla güncellendiyse listeyi güncelle
       fetchCategories();
+      
+      // Sayfaları yeniden oluştur
+      await triggerRevalidate();
     } catch (error) {
       console.error('Kategori açıklaması güncelleme hatası:', error);
       alert('Kategori açıklaması güncellenirken bir hata oluştu');
@@ -126,6 +142,9 @@ export default function Categories() {
 
       // Başarıyla güncellendiyse listeyi güncelle
       fetchCategories();
+      
+      // Sayfaları yeniden oluştur
+      await triggerRevalidate();
     } catch (error) {
       console.error('Kategori güncelleme hatası:', error);
       alert('Kategori güncellenirken bir hata oluştu');

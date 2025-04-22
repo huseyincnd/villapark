@@ -38,6 +38,16 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
   const [existingOrders, setExistingOrders] = useState<number[]>([]);
   const [orderError, setOrderError] = useState('');
 
+  // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
+  const triggerRevalidate = async () => {
+    try {
+      await fetch('/api/revalidate?secret=villapark2024');
+      console.log('Sayfalar yeniden oluşturuldu');
+    } catch (error) {
+      console.error('Revalidate hatası:', error);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -168,6 +178,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
     
     // Form verilerini gönder
     await onSubmit({ name, description, price, image, categoryId, order });
+    
+    // Değişiklik yapıldıktan sonra sayfaları yeniden oluştur
+    await triggerRevalidate();
   };
 
   // Debug bilgisi ekle (geliştirme aşamasında yardımcı olabilir)

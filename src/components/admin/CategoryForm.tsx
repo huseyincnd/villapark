@@ -14,6 +14,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmit, isSu
   const [image, setImage] = useState(initialData?.image || '');
   const [errors, setErrors] = useState({ name: '', image: '' });
 
+  // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
+  const triggerRevalidate = async () => {
+    try {
+      await fetch('/api/revalidate?secret=villapark2024');
+      console.log('Sayfalar yeniden oluşturuldu');
+    } catch (error) {
+      console.error('Revalidate hatası:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -30,6 +40,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmit, isSu
     
     // Form verilerini gönder
     await onSubmit({ name, image });
+    
+    // Değişiklik yapıldıktan sonra sayfaları yeniden oluştur
+    await triggerRevalidate();
   };
 
   return (

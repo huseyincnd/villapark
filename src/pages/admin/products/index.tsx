@@ -16,6 +16,16 @@ export default function Products() {
     fetchData();
   }, []);
 
+  // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
+  const triggerRevalidate = async () => {
+    try {
+      await fetch('/api/revalidate?secret=villapark2024');
+      console.log('Sayfalar yeniden oluşturuldu');
+    } catch (error) {
+      console.error('Revalidate hatası:', error);
+    }
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -76,6 +86,9 @@ export default function Products() {
 
       // Başarıyla silindiyse listeyi güncelle
       fetchData();
+      
+      // Sayfaları yeniden oluştur
+      await triggerRevalidate();
     } catch (error) {
       console.error('Ürün silme hatası:', error);
       alert('Ürün silinirken bir hata oluştu');
@@ -133,6 +146,9 @@ export default function Products() {
 
       // Başarıyla güncellendiyse listeyi güncelle
       fetchData();
+      
+      // Sayfaları yeniden oluştur
+      await triggerRevalidate();
     } catch (error) {
       console.error('Ürün kategorisi güncelleme hatası:', error);
       alert('Ürün kategorisi güncellenirken bir hata oluştu');
@@ -157,6 +173,9 @@ export default function Products() {
 
       // Başarıyla güncellendiyse listeyi güncelle
       fetchData();
+      
+      // Sayfaları yeniden oluştur
+      await triggerRevalidate();
     } catch (error) {
       console.error('Ürün fiyatı güncelleme hatası:', error);
       alert('Ürün fiyatı güncellenirken bir hata oluştu');
