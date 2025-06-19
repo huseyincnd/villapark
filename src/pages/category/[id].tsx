@@ -118,20 +118,34 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ initialCategory, initialCat
       if (newProducts.length === 0) {
         setHasMore(false);
       } else {
-        setCategory(prev => {
-          if (!prev) return prev;
-          
-          // Mevcut ürünler yoksa boş bir dizi kullan
-          const currentProducts = prev.products || [];
-          
-          return {
-            ...prev,
-            products: [...currentProducts, ...newProducts]
-          };
+        // Duplicate ürünleri filtrele - hem _id hem de id alanını kontrol et
+        const currentProducts = category?.products || [];
+        const existingIds = new Set(currentProducts.map((p: Product) => p._id?.toString() || p.id?.toString()));
+        const uniqueNewProducts = newProducts.filter((p: Product) => {
+          const productId = p._id?.toString() || p.id?.toString();
+          return !existingIds.has(productId);
         });
         
-        setCurrentPage(prev => prev + 1);
-        setHasMore(newProducts.length >= 20);
+        console.log(`${newProducts.length} yeni ürün geldi, ${uniqueNewProducts.length} benzersiz ürün ekleniyor`);
+        
+        // Eğer hiç yeni benzersiz ürün yoksa, daha fazla yükleme yapmayı durdur
+        if (uniqueNewProducts.length === 0) {
+          console.log('Yeni benzersiz ürün bulunamadı, hasMore false yapılıyor');
+          setHasMore(false);
+        } else {
+          // Benzersiz ürünleri ekle
+          setCategory(prev => {
+            if (!prev) return prev;
+            
+            return {
+              ...prev,
+              products: [...currentProducts, ...uniqueNewProducts]
+            };
+          });
+          
+          setCurrentPage(prev => prev + 1);
+          setHasMore(newProducts.length >= 20);
+        }
       }
     } catch (error) {
       console.error('Daha fazla ürün yüklenirken hata oluştu:', error);

@@ -41,7 +41,8 @@ async function handler(req, res) {
           productsQuery = productsQuery.populate('categoryId');
         
           // Önce sıralama işlemini MongoDB'de uygula
-          productsQuery = productsQuery.sort({ order: 1 });
+          // order ve _id'ye göre sıralama yaparak tutarlılık sağla
+          productsQuery = productsQuery.sort({ order: 1, _id: 1 });
           
           // Pagination için offset (skip) uygula
           if (skip && !isNaN(parseInt(skip))) {
