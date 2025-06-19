@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, categoryName }) => {
       </div>
       
       <div className="relative h-56 w-full">
-        {/* Görsel yoksa placeholder göster */}
+        {/* Görsel yoksa placeholdergöster */}
         {product.image ? (
           <div className="absolute inset-0 overflow-hidden">
             <img
