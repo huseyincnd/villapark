@@ -41,8 +41,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
   // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
   const triggerRevalidate = async () => {
     try {
-      await fetch('/api/revalidate?secret=villapark2024');
-      console.log('Sayfalar yeniden oluşturuldu');
+      // Güçlü cache bypass kullan - Admin değişiklikleri için
+      const response = await fetch('/api/revalidate?secret=villapark2024&bypass=true');
+      const result = await response.json();
+      console.log('Admin değişiklikleri anında uygulandı:', result);
+      
+      // Kullanıcıya başarı mesajı göster
+      if (result.bypassed) {
+        console.log('✅ Cache bypass edildi ve site anında güncellendi!');
+      }
     } catch (error) {
       console.error('Revalidate hatası:', error);
     }

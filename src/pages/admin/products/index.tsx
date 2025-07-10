@@ -19,8 +19,10 @@ export default function Products() {
   // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
   const triggerRevalidate = async () => {
     try {
-      await fetch('/api/revalidate?secret=villapark2024');
-      console.log('Sayfalar yeniden oluşturuldu');
+      // Güçlü cache bypass kullan - Admin değişiklikleri için
+      const response = await fetch('/api/revalidate?secret=villapark2024&bypass=true');
+      const result = await response.json();
+      console.log('Admin değişiklikleri anında uygulandı:', result);
     } catch (error) {
       console.error('Revalidate hatası:', error);
     }
