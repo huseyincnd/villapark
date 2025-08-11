@@ -26,7 +26,7 @@ const Home: React.FC<HomeProps> = ({ initialCategories }) => {
           const data = await response.json();
           setCategories(data);
         } catch (error) {
-          console.error('Kategoriler yüklenirken hata oluştu:', error);
+          console.error('Kategoriler yüklenirken hata oluştu:.', error);
         } finally {
           setLoading(false);
         }
