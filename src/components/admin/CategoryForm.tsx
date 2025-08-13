@@ -14,13 +14,13 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, onSubmit, isSu
   const [image, setImage] = useState(initialData?.image || '');
   const [errors, setErrors] = useState({ name: '', image: '' });
 
-  // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
+  // Revalidate fonksiyonu - sadece gerekli sayfaları yeniden oluşturmak için
   const triggerRevalidate = async () => {
     try {
-      // Güçlü cache bypass kullan - Admin değişiklikleri için
-      const response = await fetch('/api/revalidate?secret=villapark2024&bypass=true');
+      // Daha verimli: sadece ana sayfa ve kategori sayfalarını yenile
+      const response = await fetch('/api/revalidate?secret=villapark2024&immediate=true');
       const result = await response.json();
-      console.log('Admin değişiklikleri anında uygulandı:', result);
+      console.log('Kategori değişiklikleri anında uygulandı:', result);
     } catch (error) {
       console.error('Revalidate hatası:', error);
     }

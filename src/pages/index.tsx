@@ -324,7 +324,7 @@ export async function getStaticProps() {
       props: {
         initialCategories,
       },
-      revalidate: 3600 // 1 saat arayla yeniden oluştur
+      revalidate: 2592000 // 30 gün - sadece emergency fallback, normal güncelleme admin değişikliklerinde
     };
   } catch (error) {
     console.error('Kategoriler getirilemedi:', error);
@@ -332,7 +332,7 @@ export async function getStaticProps() {
       props: {
         initialCategories: [],
       },
-      revalidate: 3600
+      revalidate: 2592000 // 30 gün - sadece emergency fallback
     };
   }
 }

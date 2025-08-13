@@ -19,8 +19,8 @@ async function handler(req, res) {
         if (!category) {
           return res.status(404).json({ success: false, error: 'Category not found' });
         }
-        // Önbelleğe alma başlıklarını ekle
-        res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
+        // Admin değişikliklerinin anında gözükmesi için cache kaldırıldı
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.status(200).json(category);
       } catch (error) {
         res.status(400).json({ success: false, error: error.message });

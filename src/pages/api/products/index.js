@@ -62,8 +62,8 @@ async function handler(req, res) {
           let products = await productsQuery;
           console.log(`${products.length} ürün bulundu`);
           
-          // Önbelleğe alma başlıklarını ekle
-          res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
+          // Admin değişikliklerinin anında gözükmesi için cache kaldırıldı
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.status(200).json(products);
       } catch (error) {
           console.error('Ürünler alınırken hata:', error);

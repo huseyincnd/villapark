@@ -38,17 +38,17 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSubmit, isSubm
   const [existingOrders, setExistingOrders] = useState<number[]>([]);
   const [orderError, setOrderError] = useState('');
 
-  // Revalidate fonksiyonu - sayfaları yeniden oluşturmak için
+  // Revalidate fonksiyonu - sadece gerekli sayfaları yeniden oluşturmak için
   const triggerRevalidate = async () => {
     try {
-      // Güçlü cache bypass kullan - Admin değişiklikleri için
-      const response = await fetch('/api/revalidate?secret=villapark2024&bypass=true');
+      // Daha verimli: sadece ana sayfa ve ilgili kategori sayfasını yenile
+      const response = await fetch('/api/revalidate?secret=villapark2024&immediate=true');
       const result = await response.json();
-      console.log('Admin değişiklikleri anında uygulandı:', result);
+      console.log('Ürün değişiklikleri anında uygulandı:', result);
       
       // Kullanıcıya başarı mesajı göster
-      if (result.bypassed) {
-        console.log('✅ Cache bypass edildi ve site anında güncellendi!');
+      if (result.revalidated) {
+        console.log('✅ Site anında güncellendi!');
       }
     } catch (error) {
       console.error('Revalidate hatası:', error);

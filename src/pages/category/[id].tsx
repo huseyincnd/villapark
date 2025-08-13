@@ -385,7 +385,7 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
       console.error(`Kategori API hatası: ${categoryRes.status}`);
       return { 
         notFound: true,
-        revalidate: 86400 // 24 saat
+        revalidate: 2592000 // 30 gün - sadece emergency fallback
       };
     }
     
@@ -432,13 +432,13 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
         initialCategory,
         initialCategories,
       },
-      revalidate: 86400 // 24 saat 
+      revalidate: 2592000 // 30 gün - sadece emergency fallback
     };
   } catch (error) {
     console.error('Veri getirilemedi:', error);
     return {
       notFound: true,
-      revalidate: 86400 // 24 saat
+      revalidate: 2592000 // 30 gün - sadece emergency fallback
     };
   }
 }
